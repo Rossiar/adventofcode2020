@@ -7,7 +7,11 @@ import (
 )
 
 func main() {
-	partOne()
+	partOne := playGame(2020, "17,1,3,16,19,0")
+	log.Printf("part one: %d", partOne)
+
+	partTwo := playGame(30000000, "17,1,3,16,19,0")
+	log.Printf("part two: %d", partTwo)
 }
 
 type game struct {
@@ -36,17 +40,14 @@ func startPuzzle(start ...int) *game {
 	return g
 }
 
-func partOne() {
-	start := aoc.ToIntSlice(strings.Split("17,1,3,16,19,0", ","))
+func playGame(nth int, input string) int {
+	start := aoc.ToIntSlice(strings.Split(input, ","))
 	game := startPuzzle(start...)
 
-	for i := 0; i < 2020-len(start); i++ {
+	for i := 0; i < nth-len(start); i++ {
 		game.Next()
 	}
 
-	log.Printf("%dth number was %d", len(game.numbers)-1, game.numbers[len(game.numbers)-1])
-}
-
-func partTwo() {
+	return game.numbers[len(game.numbers)-1]
 
 }
