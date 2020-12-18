@@ -10,6 +10,8 @@ import (
 
 func main() {
 	partOne()
+
+	partTwo()
 }
 
 func partOne() {
@@ -58,5 +60,42 @@ func parse(expression string) int {
 }
 
 func partTwo() {
+	lines := aoc.ReadInput("./18/input.txt")
+	total := 0
+	for _, line := range lines {
+		total += parseAdvanced(line)
+	}
+	log.Printf("%d", total)
+}
 
+var (
+	additionExpression       = regexp.MustCompile(`(\d+) \+ (\d+)`)
+	multiplicationExpression = regexp.MustCompile(`(\d+) \* (\d+)`)
+)
+
+func parseAdvanced(expression string) int {
+	for strings.Contains(expression, "(") {
+		expression = simpleExpression.ReplaceAllStringFunc(expression, func(s string) string {
+			trimParenthesis := s[1 : len(s)-1]
+			return strconv.Itoa(parseAdvanced(trimParenthesis))
+		})
+	}
+
+	for strings.Contains(expression, "+") {
+		expression = additionExpression.ReplaceAllStringFunc(expression, func(s string) string {
+			match := additionExpression.FindStringSubmatch(s)
+			sum := aoc.Atoi(match[1]) + aoc.Atoi(match[2])
+			return strconv.Itoa(sum)
+		})
+	}
+
+	for strings.Contains(expression, "*") {
+		expression = multiplicationExpression.ReplaceAllStringFunc(expression, func(s string) string {
+			match := multiplicationExpression.FindStringSubmatch(s)
+			product := aoc.Atoi(match[1]) * aoc.Atoi(match[2])
+			return strconv.Itoa(product)
+		})
+	}
+
+	return aoc.Atoi(expression)
 }
