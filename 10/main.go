@@ -54,48 +54,34 @@ func (jc joltCounter) Result() int {
 }
 
 func partTwo() {
-	lines := aoc.ReadInput("./10/sample2.txt")
+	lines := aoc.ReadInput("./10/input.txt")
 	jolts := aoc.ToIntSlice(lines)
-	sort.Slice(jolts, func(i, j int) bool {
-		return jolts[i] < jolts[j]
-	})
+	sort.Ints(jolts)
 
-	permutation := make([]int, 0)
-	permutations := gen(jolts, permutation)
-	for _, p := range permutations {
-		if len(p) == 29 {
-			log.Printf("%+v", p)
-		}
-	}
-	log.Printf("%d total permutations", len(permutations))
+	jolts = append([]int{0}, jolts...)
+	num := mathsWay(jolts, 0, make(map[int]int))
+	log.Printf("%d total permutations", num)
 }
 
-func gen(jolts, permu []int) [][]int {
-	if len(jolts) == 0 {
-		return [][]int{permu}
+// https://github.com/chigley/advent2020/blob/master/day10/day10.go
+func mathsWay(jolts []int, i int, cache map[int]int) int {
+	if n, ok := cache[i]; ok {
+		return n
 	}
 
-	if len(permu) == 0 {
-		return gen(jolts[1:], append(permu, jolts[0]))
+	if i == len(jolts)-1 {
+		return 1
 	}
 
-	head := permu[len(permu)-1]
-
-	// count all available branches
-	branches := make([]int, 0)
-	for i := 0; i < len(jolts); i++ {
-		if jolts[i] > head+3 {
+	branches := 0
+	for j := i + 1; j < len(jolts); j++ {
+		if jolts[j] > jolts[i]+3 {
 			break
 		}
-		branches = append(branches, i)
+
+		branches += mathsWay(jolts, j, cache)
 	}
 
-	permutations := make([][]int, 0)
-	for _, i := range branches {
-		branch := make([]int, 0)
-		branch = append(permu, jolts[i])
-		permutations = append(permutations, gen(jolts[i+1:], branch)...)
-	}
-
-	return permutations
+	cache[i] = branches
+	return branches
 }
