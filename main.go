@@ -44,3 +44,12 @@ func ToIntSlice(strings []string) []int {
 	}
 	return numbers
 }
+
+func Reverse(s string) string {
+	reversed := make([]rune, len(s))
+	for i := 0; i < len(s); i++ {
+		lastElement := len(s) - 1
+		reversed[lastElement-i] = rune(s[i])
+	}
+	return string(reversed)
+}
